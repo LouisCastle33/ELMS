@@ -5,12 +5,12 @@ if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
 
     $stmt = $conn->prepare("UPDATE leave_applications 
-                            SET dept_head_status='Approved', gm_status='Pending' 
+                            SET dept_head_status='Rejected', final_status='Rejected' 
                             WHERE id=?");
     $stmt->bind_param("i", $id);
 
     if ($stmt->execute()) {
-        echo "<script>alert('Leave request approved and forwarded to General Manager!'); 
+        echo "<script>alert('Leave request rejected.'); 
               window.location.href='dept_pending.php';</script>";
     } else {
         echo "Error: " . $stmt->error;

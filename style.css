@@ -428,127 +428,203 @@ body {
 	box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
 	transform: translateY(-2px);
 }
+
 .modal {
-    display: none;
-    position: fixed;
-    z-index: 999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
-    background: rgba(128, 128, 128, 0.4);; /* no dark overlay */
-	background-color: rgba(128, 128, 128, 0.4); 
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  background: rgba(128, 128, 128, 0.4);
 }
 
 .modal.visible {
-    display: flex;
+  display: flex;
 }
 
 .modal-content {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 900px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-
-    transform: scale(0.8);
-    opacity: 0;
-    transition: all 0.3s ease-in-out;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  width: 90%;
+  max-width: 1000px;
+  display: flex;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  transform: scale(0.9);
+  opacity: 0;
+  transition: all 0.3s ease;
+  
 }
 
 .modal.show .modal-content {
-    transform: scale(1);
-    opacity: 1;
+  transform: scale(1);
+  opacity: 1;
 }
 
-
-
-.leave-form {
-    background: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    max-width: 800px;
-    margin: 30px auto;
+/* Left form */
+.modal-form-card {
+  flex: 2;
+  padding: 25px;
 }
 
-.leave-form h3 {
-    font-size: 20px;
-    margin-bottom: 20px;
+.modal-form-card h3 {
+  font-size: 18px;
+  margin-bottom: 15px;
 }
-.leave-form h4 {
-    font-size: 16px;
-    margin-top: 25px;
-    margin-bottom: 15px;
-    color: #333;
+
+.modal-form-card h4 {
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
 }
 
 .form-row {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 15px;
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
 }
 
 .form-group {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
+
 .form-group.full {
-    width: 100%;
-    margin-bottom: 15px;
+  flex: 100%;
 }
 
 .form-group label {
-    margin-bottom: 6px;
-    font-size: 13px;
-    color: #555;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 5px;
 }
 
 .form-group input,
 .form-group select {
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background: #f9fafb;
-    font-size: 14px;
-    transition: border 0.2s;
-}
-.form-group input:focus,
-.form-group select:focus {
-    border-color: #003366;
-    outline: none;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  background: #fff;
 }
 
 .submit-btn {
-    margin-top: 25px;
-    padding: 12px 20px;
-    background: #003366;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.3s;
+  background: #003366;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
 }
 .submit-btn:hover {
-    background: #005599;
+  background: #002244;
 }
 
-/* Keep your close style */
+/* Right workflow panel */
+.workflow-panel {
+  flex: 1;
+  background: #f9fafb;
+  padding: 20px;
+  border-left: 1px solid #eee;
+}
+
+.workflow-panel h4 {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.workflow-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.workflow-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.workflow-list li p {
+  font-size: 12px;
+  margin: 2px 0 0;
+  color: #555;
+}
+
+.workflow-list .wf-step {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+}
+
+.step1 { background: #3b82f6; }
+.step2 { background: #a855f7; }
+.step3 { background: #22c55e; }
+.step4 { background: #06b6d4; }
+
+/* Close button */
 .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    cursor: pointer;
+  position: absolute;
+  right: 20px;
+  top: 15px;
+  font-size: 20px;
+  cursor: pointer;
 }
 .close:hover {
-    color: #000;
+  color: red;
 }
 
+/* Increase font sizes for older-friendly readability */
+.modal-content {
+  font-size: 16px; /* base font size */
+}
+
+.modal-content label {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.modal-content input,
+.modal-content select {
+  font-size: 15px;
+  padding: 12px;
+}
+
+.workflow-panel {
+  font-size: 15px;
+}
+
+.workflow-list li {
+  font-size: 15px;
+}
+
+.submit-btn {
+  font-size: 16px;
+  padding: 14px 26px;
+}
 
 
 

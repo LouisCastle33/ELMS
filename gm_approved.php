@@ -1,111 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Approved - GM</title>
-	<link rel="stylesheet" href="style.css">
-	<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-</head>
-<body>
+<?php
+include 'db_connect.php';
 
-<section id="sidebar">
-	<a href="#" class="brand">
-		<i class='bx bx-briefcase-alt-2'></i>
-		<span class="text">GM Panel</span>
-	</a>
-	<ul class="side-menu top">
-		<li>
-			<a href="gm_dashboard.php">
-				<i class='bx bx-grid-alt'></i>
-				<span class="text">Dashboard</span>
-			</a>
-		</li>
-		<li>
-			<a href="gm_pending.php">
-				<i class='bx bx-time-five'></i>
-				<span class="text">Pending</span>
-			</a>
-		</li>
-		<li class="active">
-			<a href="gm_approved.php">
-				<i class='bx bx-check-double'></i>
-				<span class="text">Approved</span>
-			</a>
-		</li>
-	</ul>
-	<ul class="side-menu">
-		<li>
-			<a href="logout.php" class="logout">
-				<i class='bx bx-log-out'></i>
-				<span class="text">Logout</span>
-			</a>
-		</li>
-	</ul>
-</section>
+if (isset($_GET['id'])) {
+    $leave_id = $_GET['id'];
 
-<section id="content">
-	<nav>
-		<i class='bx bx-menu'></i>
-		<a href="#" class="nav-link">Approved</a>
-		<input type="checkbox" id="switch-mode" hidden>
-		<label for="switch-mode" class="switch-mode"></label>
-	</nav>
+    // Step 1: Fetch leave info
+    $query = $conn->prepare("SELECT user_id, leave_type, total_days FROM leave_applications WHERE id = ?");
+    $query->bind_param("i", $leave_id);
+    $query->execute();
+    $result = $query->get_result()->fetch_assoc();
 
-	<main>
-		<div class="head-title">
-			<div class="left">
-				<h1>Approved Requests</h1>
-				<ul class="breadcrumb">
-					<li><a href="gm_dashboard.php">Dashboard</a></li>
-					<li><i class='bx bx-chevron-right'></i></li>
-					<li><a href="#" class="active">Approved</a></li>
-				</ul>
-			</div>
-		</div>
+    $user_id = $result['user_id'];
+    $leave_type = $result['leave_type'];
+    $days_used = $result['total_days'];
+    $year = date('Y');
 
-		<div class="table-data">
-			<div class="order">
-				<div class="head">
-					<h3>Final Approved Leaves</h3>
-				</div>
-				<table>
-					<thead>
-						<tr>
-							<th>Employee</th>
-							<th>Type</th>
-							<th>Filed</th>
-							<th>Start</th>
-							<th>End</th>
-							<th>Days</th>
-							<th>Cash Out</th>
-							<th>Status</th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php foreach ($approvedLeaves as $row): ?>
-						<tr>
-							<td><?= $row['name'] ?></td>
-							<td><?= $row['type'] ?></td>
-							<td><?= $row['date_filed'] ?></td>
-							<td><?= $row['start'] ?></td>
-							<td><?= $row['end'] ?></td>
-							<td><?= $row['days'] ?></td>
-							<td><?= $row['convert'] ?></td>
-							<td><span class="status completed">Approved</span></td>
-						</tr>
-						<?php endforeach; ?>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</main>
-</section>
+    // Step 2: Mark as approved
+    $update = $conn->prepare("UPDATE leave_applications 
+                              SET gm_status='Approved', final_status='Approved' 
+                              WHERE id=?");
+    $update->bind_param("i", $leave_id);
+    $update->execute();
 
-<script>
-	document.querySelector(".bx-menu").addEventListener("click", () => {
-		document.querySelector("#sidebar").classList.toggle("hide");
-	});
-</script>
+    // Step 3: Deduct from leave_credits
+    if ($leave_type == 'Annual Leave') {
+        $conn->query("UPDATE leave_credits SET used_annual = used_annual + $days_used WHERE user_id=$user_id AND year=$year");
+    } elseif ($leave_type == 'Sick Leave') {
+        $conn->query("UPDATE leave_credits SET used_sick = used_sick + $days_used WHERE user_id=$user_id AND year=$year");
+    } elseif ($leave_type == 'Calamity Leave') {
+        $conn->query("UPDATE leave_credits SET used_calamity = used_calamity + $days_used WHERE user_id=$user_id AND year=$year");
+    }
 
-</body>
-</html>
+    echo "<script>alert('Leave approved and deducted from remaining leave.'); window.location.href='gm_dashboard.php';</script>";
+}
+?>

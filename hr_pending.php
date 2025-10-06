@@ -1,3 +1,6 @@
+<?php
+include 'db_connect.php'; // include DB connection
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +8,17 @@
 	<title>HR - Pending Leave Requests</title>
 	<link rel="stylesheet" href="style.css">
 	<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+	<style>
+		.btn-approve, .btn-reject {
+			padding: 4px 8px;
+			border-radius: 5px;
+			color: #fff;
+			text-decoration: none;
+			font-size: 13px;
+		}
+		.btn-approve { background: #28a745; }
+		.btn-reject { background: #dc3545; }
+	</style>
 </head>
 <body>
 
@@ -67,32 +81,31 @@
 				<table>
 					<thead>
 						<tr>
-							<th>Employee</th>
+							<th>Date Filed</th>
 							<th>Type</th>
-							<th>Filed</th>
-							<th>Start</th>
-							<th>End</th>
-							<th>Days</th>
-							<th>Cash Out</th>
-							<th>Actions</th>
+							<th>Employee</th>
+							<th>Department Head</th>
+							<th>HR Status</th>
+							<th>Action</th>
 						</tr>
 					</thead>
 					<tbody>
-						<?php foreach ($pendingLeaves as $leave): ?>
-							<tr>
-								<td><?= $leave['name'] ?></td>
-								<td><?= $leave['type'] ?></td>
-								<td><?= $leave['date_filed'] ?></td>
-								<td><?= $leave['start'] ?></td>
-								<td><?= $leave['end'] ?></td>
-								<td><?= $leave['days'] ?></td>
-								<td><?= $leave['convert'] ?></td>
+						<?php
+						$res = $conn->query("SELECT * FROM leave_applications WHERE hr_status='Pending'");
+						while ($row = $res->fetch_assoc()) {
+							echo "<tr>
+								<td>".date("F j, Y", strtotime($row['filing_date']))."</td>
+								<td>".$row['leave_type']."</td>
+								<td>".$row['full_name']."</td>
+								<td>".$row['department_head']."</td>
+								<td><span class='status pending'>".$row['hr_status']."</span></td>
 								<td>
-									<a href="#" class="apply-btn" style="padding: 6px 16px; font-size: 13px;">✅ Approve</a>
-									<a href="#" class="apply-btn" style="background: var(--red); padding: 6px 16px; font-size: 13px;">❌ Reject</a>
+									<a href='hr_approved.php?id=".$row['id']."' class='btn-approve'>Approve</a>
+									<a href='hr_reject.php?id=".$row['id']."' class='btn-reject'>Reject</a>
 								</td>
-							</tr>
-						<?php endforeach; ?>
+							</tr>";
+						}
+						?>
 					</tbody>
 				</table>
 			</div>
@@ -103,7 +116,6 @@
 <script>
 	const menuToggle = document.querySelector(".bx-menu");
 	const sidebar = document.querySelector("#sidebar");
-
 	menuToggle.addEventListener("click", () => {
 		sidebar.classList.toggle("hide");
 	});

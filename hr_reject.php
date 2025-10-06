@@ -4,18 +4,18 @@ include 'db_connect.php';
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
 
+    // HR rejects, mark as final rejected
     $stmt = $conn->prepare("UPDATE leave_applications 
-                            SET dept_head_status='Approved', gm_status='Pending' 
+                            SET hr_status='Rejected', final_status='Rejected' 
                             WHERE id=?");
     $stmt->bind_param("i", $id);
 
     if ($stmt->execute()) {
-        echo "<script>alert('Leave request approved and forwarded to General Manager!'); 
-              window.location.href='dept_pending.php';</script>";
+        echo "<script>alert('Leave request rejected.'); 
+              window.location.href='hr_pending.php';</script>";
     } else {
         echo "Error: " . $stmt->error;
     }
-
     $stmt->close();
 }
 $conn->close();

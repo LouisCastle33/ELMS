@@ -1,116 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>HR - Approved Leaves</title>
-	<link rel="stylesheet" href="style.css">
-	<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-</head>
-<body>
+<?php
+include 'db_connect.php';
 
-<!-- SIDEBAR -->
-<section id="sidebar">
-	<a href="#" class="brand">
-		<i class='bx bx-shield-quarter'></i>
-		<span class="text">HR Panel</span>
-	</a>
-	<ul class="side-menu top">
-		<li>
-			<a href="hr_dashboard.php">
-				<i class='bx bx-grid-alt'></i>
-				<span class="text">Dashboard</span>
-			</a>
-		</li>
-		<li>
-			<a href="hr_pending.php">
-				<i class='bx bx-time-five'></i>
-				<span class="text">Pending Requests</span>
-			</a>
-		</li>
-		<li class="active">
-			<a href="hr_approved.php">
-				<i class='bx bx-check-double'></i>
-				<span class="text">Approved Leaves</span>
-			</a>
-		</li>
-	</ul>
-	<ul class="side-menu">
-		<li>
-			<a href="logout.php" class="logout">
-				<i class='bx bx-log-out'></i>
-				<span class="text">Logout</span>
-			</a>
-		</li>
-	</ul>
-</section>
+if (isset($_GET['id'])) {
+    $id = intval($_GET['id']);
 
-<!-- CONTENT -->
-<section id="content">
-	<nav>
-		<i class='bx bx-menu'></i>
-		<a href="#" class="nav-link">Approved Requests</a>
-		<input type="checkbox" id="switch-mode" hidden>
-		<label for="switch-mode" class="switch-mode"></label>
-	</nav>
+    // HR approves, forward to Dept Head
+    $stmt = $conn->prepare("UPDATE leave_applications 
+                            SET hr_status='Approved', dept_head_status='Pending' 
+                            WHERE id=?");
+    $stmt->bind_param("i", $id);
 
-	<main>
-		<div class="head-title">
-			<div class="left">
-				<h1>Approved Leave Requests</h1>
-				<ul class="breadcrumb">
-					<li><a href="hr_dashboard.php">Dashboard</a></li>
-					<li><i class='bx bx-chevron-right'></i></li>
-					<li><a href="#" class="active">Approved</a></li>
-				</ul>
-			</div>
-		</div>
-
-		<div class="table-data">
-			<div class="order">
-				<div class="head">
-					<h3>Approved Applications</h3>
-				</div>
-				<table>
-					<thead>
-						<tr>
-							<th>Employee</th>
-							<th>Type</th>
-							<th>Filed</th>
-							<th>Start</th>
-							<th>End</th>
-							<th>Days</th>
-							<th>Cash Out</th>
-							<th>Status</th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php foreach ($approvedLeaves as $leave): ?>
-							<tr>
-								<td><?= $leave['name'] ?></td>
-								<td><?= $leave['type'] ?></td>
-								<td><?= $leave['date_filed'] ?></td>
-								<td><?= $leave['start'] ?></td>
-								<td><?= $leave['end'] ?></td>
-								<td><?= $leave['days'] ?></td>
-								<td><?= $leave['convert'] ?></td>
-								<td><span class="status completed">Approved</span></td>
-							</tr>
-						<?php endforeach; ?>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</main>
-</section>
-
-<script>
-	const menuToggle = document.querySelector(".bx-menu");
-	const sidebar = document.querySelector("#sidebar");
-
-	menuToggle.addEventListener("click", () => {
-		sidebar.classList.toggle("hide");
-	});
-</script>
-
-</body>
-</html>
+    if ($stmt->execute()) {
+        echo "<script>alert('Leave request approved and sent to Department Head!'); 
+              window.location.href='hr_pending.php';</script>";
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+    $stmt->close();
+}
+$conn->close();
+?>
